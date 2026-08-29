@@ -7,6 +7,7 @@ struct Configuration: Sendable {
   let username: String?
   let password: String?
   let provider: String?
+  let excludeProviders: String?
   let source: String?
   let pollInterval: TimeInterval?
   let exportTimeoutSeconds: TimeInterval
@@ -32,6 +33,7 @@ struct Configuration: Sendable {
 
     CodexBarCore options:
       --provider ID                   CODEXBAR_PROVIDER (enabled providers by default)
+      --exclude-providers IDS         CODEXBAR_EXCLUDE_PROVIDERS (comma-separated providers to skip)
       --source SOURCE                 CODEXBAR_SOURCE (auto, web, cli, oauth, api)
 
     Scheduling:
@@ -62,7 +64,7 @@ struct Configuration: Sendable {
         flagValues.insert(argument)
         index += 1
       case "--greptime-url", "--database", "--table", "--username", "--password", "--provider",
-        "--source", "--interval-seconds", "--export-timeout-seconds":
+        "--exclude-providers", "--source", "--interval-seconds", "--export-timeout-seconds":
         let valueIndex = index + 1
         guard valueIndex < arguments.count else {
           throw ExportError.invalidConfiguration("\(argument) requires a value")
@@ -163,6 +165,7 @@ struct Configuration: Sendable {
       username: username,
       password: password,
       provider: values["--provider"] ?? environment["CODEXBAR_PROVIDER"],
+      excludeProviders: values["--exclude-providers"] ?? environment["CODEXBAR_EXCLUDE_PROVIDERS"],
       source: values["--source"] ?? environment["CODEXBAR_SOURCE"],
       pollInterval: interval,
       exportTimeoutSeconds: exportTimeoutSeconds,

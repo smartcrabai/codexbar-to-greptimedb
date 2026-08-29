@@ -3,6 +3,7 @@ import Foundation
 
 struct CodexBarCoreFetcher: Sendable {
   let providerSelector: String?
+  let excludeSelector: String?
   let sourceOverride: String?
 
   func fetchSnapshots() async throws -> [ExportSnapshot] {
@@ -67,26 +68,44 @@ struct CodexBarCoreFetcher: Sendable {
   }
 
   private func selectedProviders(config: CodexBarConfig) throws -> [UsageProvider] {
+    let excluded = try Self.excludedProviders(from: excludeSelector)
+
     guard let rawSelector = providerSelector?.trimmingCharacters(in: .whitespacesAndNewlines),
       !rawSelector.isEmpty
     else {
-      return config.enabledProviders()
+      return config.enabledProviders().filter { !excluded.contains($0) }
     }
 
     switch rawSelector.lowercased() {
     case "all":
-      return UsageProvider.allCases
+      return UsageProvider.allCases.filter { !excluded.contains($0) }
     case "both":
-      return [.codex, .claude]
+      return [.codex, .claude].filter { !excluded.contains($0) }
     default:
-      if let provider = UsageProvider(rawValue: rawSelector) {
-        return [provider]
-      }
-      if let provider = ProviderDescriptorRegistry.cliNameMap[rawSelector.lowercased()] {
-        return [provider]
-      }
-      throw ExportError.invalidConfiguration("unknown CodexBar provider: \(rawSelector)")
+      let provider = try Self.resolveProvider(rawSelector)
+      return excluded.contains(provider) ? [] : [provider]
     }
+  }
+
+  static func excludedProviders(from selector: String?) throws -> Set<UsageProvider> {
+    guard let selector else { return [] }
+    var providers: Set<UsageProvider> = []
+    for token in selector.split(separator: ",") {
+      let name = token.trimmingCharacters(in: .whitespacesAndNewlines)
+      guard !name.isEmpty else { continue }
+      providers.insert(try Self.resolveProvider(name))
+    }
+    return providers
+  }
+
+  private static func resolveProvider(_ name: String) throws -> UsageProvider {
+    if let provider = UsageProvider(rawValue: name) {
+      return provider
+    }
+    if let provider = ProviderDescriptorRegistry.cliNameMap[name.lowercased()] {
+      return provider
+    }
+    throw ExportError.invalidConfiguration("unknown CodexBar provider: \(name)")
   }
 
   private func resolvedSourceMode(for config: ProviderConfig?) throws -> ProviderSourceMode {

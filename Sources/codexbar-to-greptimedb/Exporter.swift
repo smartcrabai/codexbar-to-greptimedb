@@ -7,6 +7,7 @@ struct Exporter: Sendable {
   func runOnce() async throws -> [ExportSnapshot] {
     let snapshots = try await CodexBarCoreFetcher(
       providerSelector: configuration.provider,
+      excludeSelector: configuration.excludeProviders,
       sourceOverride: configuration.source
     ).fetchSnapshots()
     let writer = GreptimeDBWriter(configuration: configuration)
