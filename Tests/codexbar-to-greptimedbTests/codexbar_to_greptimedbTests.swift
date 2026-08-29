@@ -275,3 +275,28 @@ func providerResult(
   #expect(exported.accountEmail == nil)
   #expect(exported.accountKey == "active-account@example.com")
 }
+
+@Test func parsesExcludeProvidersFromArgumentsAndEnvironment() throws {
+  let fromArguments = try Configuration.parse(
+    arguments: ["--greptime-url", "https://greptime.example", "--exclude-providers", "copilot"],
+    environment: ["CODEXBAR_EXCLUDE_PROVIDERS": "ignored"]
+  )
+  #expect(fromArguments.excludeProviders == "copilot")
+
+  let fromEnvironment = try Configuration.parse(
+    arguments: ["--greptime-url", "https://greptime.example"],
+    environment: ["CODEXBAR_EXCLUDE_PROVIDERS": "copilot,claude"]
+  )
+  #expect(fromEnvironment.excludeProviders == "copilot,claude")
+}
+
+@Test func resolvesExcludedProviderNamesAndRejectsUnknownOnes() throws {
+  #expect(try CodexBarCoreFetcher.excludedProviders(from: nil).isEmpty)
+  #expect(
+    try CodexBarCoreFetcher.excludedProviders(from: " copilot , claude ")
+      == [.copilot, .claude])
+
+  #expect(throws: ExportError.invalidConfiguration("unknown CodexBar provider: nope")) {
+    try CodexBarCoreFetcher.excludedProviders(from: "nope")
+  }
+}
