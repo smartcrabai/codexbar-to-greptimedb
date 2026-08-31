@@ -156,10 +156,16 @@ fi
 tar -xzf "$work_dir/$asset_name" -C "$work_dir"
 mkdir -p "$INSTALL_DIR"
 
-if [ "$platform" = "macos" ] && [ -d "$work_dir/$APP_NAME" ]; then
+archive_root="$work_dir"
+if [ ! -e "$archive_root/$APP_NAME" ] && [ -d "$archive_root/$BINARY_NAME" ]; then
+  archive_root="$archive_root/$BINARY_NAME"
+fi
+
+if [ "$platform" = "macos" ] && [ -d "$archive_root/$APP_NAME" ]; then
+  app_source="$archive_root/$APP_NAME"
   temporary_app="$INSTALL_DIR/.$APP_NAME.tmp.$$"
   rm -rf "$temporary_app"
-  ditto "$work_dir/$APP_NAME" "$temporary_app"
+  ditto "$app_source" "$temporary_app"
   rm -rf "$INSTALL_DIR/$APP_NAME"
   mv "$temporary_app" "$INSTALL_DIR/$APP_NAME"
   temporary_app=""
@@ -169,9 +175,9 @@ if [ "$platform" = "macos" ] && [ -d "$work_dir/$APP_NAME" ]; then
   ln -s "$APP_NAME/Contents/MacOS/$BINARY_NAME" "$temporary_binary"
   mv -f "$temporary_binary" "$INSTALL_DIR/$BINARY_NAME"
   temporary_binary=""
-elif [ -f "$work_dir/$BINARY_NAME" ]; then
+elif [ -f "$archive_root/$BINARY_NAME" ]; then
   temporary_binary="$INSTALL_DIR/.$BINARY_NAME.tmp.$$"
-  install -m 755 "$work_dir/$BINARY_NAME" "$temporary_binary"
+  install -m 755 "$archive_root/$BINARY_NAME" "$temporary_binary"
   mv -f "$temporary_binary" "$INSTALL_DIR/$BINARY_NAME"
   temporary_binary=""
 else

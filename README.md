@@ -49,8 +49,7 @@ sh install.sh --version 0.1.0 --install-dir "$HOME/.local/bin"
 ```
 
 ## macOS privacy permissions
-
-The macOS release installs a signed `CodexBarToGreptimeDB.app` next to the CLI wrapper. Browser cookie sources may require Full Disk Access.
+The macOS release installs a signed `CodexBarToGreptimeDB.app` next to the CLI wrapper. The archive contains an outer directory so Homebrew can stage the app bundle correctly. Browser cookie sources may require Full Disk Access.
 
 Open the privacy settings:
 

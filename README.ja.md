@@ -49,8 +49,7 @@ sh install.sh --version 0.1.0 --install-dir "$HOME/.local/bin"
 ```
 
 ## macOS のプライバシー権限
-
-macOS版は署名済みの `CodexBarToGreptimeDB.app` とCLI wrapperをインストールします。ブラウザCookieを使う場合、フルディスクアクセスが必要になることがあります。
+macOS版は署名済みの `CodexBarToGreptimeDB.app` とCLI wrapperをインストールします。Homebrewがapp bundleを正しく展開できるよう、archiveには外側のディレクトリを含めています。ブラウザCookieを使う場合、フルディスクアクセスが必要になることがあります。
 
 プライバシー設定を開きます。
 

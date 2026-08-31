@@ -138,11 +138,12 @@ jobs:
           binary=codexbar-to-greptimedb
           version_without_prefix="${VERSION#v}"
           asset_name="$binary-$version_without_prefix-$TARGET.tar.gz"
-          mkdir -p dist/staging
           if [ "$RUNNER_OS" = "macOS" ]; then
+            archive_root="$binary"
+            mkdir -p "dist/staging/$archive_root"
             ditto "$RUNNER_TEMP/CodexBarToGreptimeDB.app" \
-              "dist/staging/CodexBarToGreptimeDB.app"
-            payload="CodexBarToGreptimeDB.app"
+              "dist/staging/$archive_root/CodexBarToGreptimeDB.app"
+            payload="$archive_root"
           else
             cp ".build/release/$binary" "dist/staging/$binary"
             payload="$binary"
