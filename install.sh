@@ -6,6 +6,7 @@ set -eu
 
 REPOSITORY="${CODEXBAR_TO_GREPTIMEDB_REPOSITORY:-smartcrabai/codexbar-to-greptimedb}"
 BINARY_NAME="codexbar-to-greptimedb"
+APP_NAME="CodexBarToGreptimeDB.app"
 INSTALL_DIR="${CODEXBAR_TO_GREPTIMEDB_INSTALL_DIR:-$HOME/.local/bin}"
 VERSION="${CODEXBAR_TO_GREPTIMEDB_VERSION:-latest}"
 
@@ -96,6 +97,10 @@ case "$platform-$architecture" in
     ;;
 esac
 
+if [ "$platform" = "macos" ]; then
+  require_command ditto
+fi
+
 if [ "$VERSION" = "latest" ]; then
   VERSION="$(
     curl --fail --location --retry 3 --silent --show-error \
@@ -121,9 +126,13 @@ checksum_url="$asset_url.sha256"
 
 work_dir="$(mktemp -d "${TMPDIR:-/tmp}/$BINARY_NAME.XXXXXX")"
 temporary_binary=""
+temporary_app=""
 cleanup() {
   if [ -n "$temporary_binary" ]; then
     rm -f "$temporary_binary"
+  fi
+  if [ -n "$temporary_app" ]; then
+    rm -rf "$temporary_app"
   fi
   rm -rf "$work_dir"
 }
@@ -145,16 +154,30 @@ if [ -z "$expected_checksum" ] || [ "$expected_checksum" != "$actual_checksum" ]
 fi
 
 tar -xzf "$work_dir/$asset_name" -C "$work_dir"
-if [ ! -f "$work_dir/$BINARY_NAME" ]; then
-  printf '%s\n' "error: release archive does not contain $BINARY_NAME" >&2
+mkdir -p "$INSTALL_DIR"
+
+if [ "$platform" = "macos" ] && [ -d "$work_dir/$APP_NAME" ]; then
+  temporary_app="$INSTALL_DIR/.$APP_NAME.tmp.$$"
+  rm -rf "$temporary_app"
+  ditto "$work_dir/$APP_NAME" "$temporary_app"
+  rm -rf "$INSTALL_DIR/$APP_NAME"
+  mv "$temporary_app" "$INSTALL_DIR/$APP_NAME"
+  temporary_app=""
+
+  temporary_binary="$INSTALL_DIR/.$BINARY_NAME.tmp.$$"
+  rm -f "$temporary_binary"
+  ln -s "$APP_NAME/Contents/MacOS/$BINARY_NAME" "$temporary_binary"
+  mv -f "$temporary_binary" "$INSTALL_DIR/$BINARY_NAME"
+  temporary_binary=""
+elif [ -f "$work_dir/$BINARY_NAME" ]; then
+  temporary_binary="$INSTALL_DIR/.$BINARY_NAME.tmp.$$"
+  install -m 755 "$work_dir/$BINARY_NAME" "$temporary_binary"
+  mv -f "$temporary_binary" "$INSTALL_DIR/$BINARY_NAME"
+  temporary_binary=""
+else
+  printf '%s\n' "error: release archive does not contain $APP_NAME or $BINARY_NAME" >&2
   exit 1
 fi
-
-mkdir -p "$INSTALL_DIR"
-temporary_binary="$INSTALL_DIR/.$BINARY_NAME.tmp.$$"
-install -m 755 "$work_dir/$BINARY_NAME" "$temporary_binary"
-mv -f "$temporary_binary" "$INSTALL_DIR/$BINARY_NAME"
-temporary_binary=""
 
 printf '%s\n' "Installed $BINARY_NAME $release_tag to $INSTALL_DIR/$BINARY_NAME"
 case ":$PATH:" in

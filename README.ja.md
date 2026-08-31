@@ -48,6 +48,32 @@ curl --fail --location --silent --show-error \
 sh install.sh --version 0.1.0 --install-dir "$HOME/.local/bin"
 ```
 
+## macOS のプライバシー権限
+
+macOS版は署名済みの `CodexBarToGreptimeDB.app` とCLI wrapperをインストールします。ブラウザCookieを使う場合、フルディスクアクセスが必要になることがあります。
+
+プライバシー設定を開きます。
+
+```sh
+open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'
+```
+
+追加対象は `codexbar-to-greptimedb` のwrapperや `Contents/MacOS` 内のバイナリではなく、`.app` 本体です。
+
+Homebrewのパス:
+
+```text
+$(brew --prefix codexbar-to-greptimedb)/CodexBarToGreptimeDB.app
+```
+
+リリース用インストーラーのパス:
+
+```text
+$HOME/.local/bin/CodexBarToGreptimeDB.app
+```
+
+権限付与後、Homebrew serviceを再起動します。フルディスクアクセスは主にSafariのCookie・local storage読み取りで必要です。対応プロバイダーでは `cli`、`oauth`、`api` sourceを使うとブラウザ保存領域へのアクセスを避けられます。
+
 ## CodexBar の設定
 
 `--provider` を指定しない場合は、CodexBar 設定で有効なプロバイダーを保存します。CodexBar と同じ順序で次の設定ファイルを読みます。

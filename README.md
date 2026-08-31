@@ -48,6 +48,32 @@ curl --fail --location --silent --show-error \
 sh install.sh --version 0.1.0 --install-dir "$HOME/.local/bin"
 ```
 
+## macOS privacy permissions
+
+The macOS release installs a signed `CodexBarToGreptimeDB.app` next to the CLI wrapper. Browser cookie sources may require Full Disk Access.
+
+Open the privacy settings:
+
+```sh
+open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'
+```
+
+Add the app bundle, not the `codexbar-to-greptimedb` wrapper or the binary inside `Contents/MacOS`.
+
+Homebrew path:
+
+```text
+$(brew --prefix codexbar-to-greptimedb)/CodexBarToGreptimeDB.app
+```
+
+Release installer path:
+
+```text
+$HOME/.local/bin/CodexBarToGreptimeDB.app
+```
+
+Restart the Homebrew service after granting access. Full Disk Access is mainly needed for Safari cookie/local-storage reads; use `cli`, `oauth`, or `api` sources when the provider supports them to avoid browser storage access.
+
 ## Configure CodexBar
 
 When `--provider` is omitted, the exporter uses the providers enabled in your CodexBar configuration. It reads the same configuration locations as CodexBar, in this order:

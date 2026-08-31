@@ -27,6 +27,7 @@ done
 
 version="${VERSION#v}"
 binary="codexbar-to-greptimedb"
+app_name="CodexBarToGreptimeDB.app"
 release_url="https://github.com/${REPOSITORY}/releases/download/${VERSION}"
 
 mkdir -p "$(dirname "$OUTPUT")"
@@ -51,7 +52,8 @@ class CodexbarToGreptimedb < Formula
   end
 
   def install
-    bin.install "${binary}"
+    prefix.install "${app_name}"
+    bin.write_exec_script prefix/"${app_name}/Contents/MacOS/${binary}"
 
     config = etc/"${binary}.env"
     unless config.exist?
@@ -69,7 +71,7 @@ class CodexbarToGreptimedb < Formula
       #!/bin/sh
       set -a
       . "#{config}"
-      exec "#{opt_bin}/${binary}" --every-minute
+      exec "#{opt_prefix}/${app_name}/Contents/MacOS/${binary}" --every-minute
     SH
     service_script.chmod 0755
   end

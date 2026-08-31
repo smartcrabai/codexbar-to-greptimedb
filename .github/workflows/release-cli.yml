@@ -46,7 +46,7 @@ jobs:
           else
             swift build --configuration release --product codexbar-to-greptimedb
           fi
-      - name: Sign and notarize macOS binary
+      - name: Sign and notarize macOS app
         if: runner.os == 'macOS'
         env:
           TARGET: ${{ matrix.target }}
@@ -59,6 +59,7 @@ jobs:
           set -euo pipefail
 
           binary=".build/release/codexbar-to-greptimedb"
+          app="$RUNNER_TEMP/CodexBarToGreptimeDB.app"
           certificate_path="$RUNNER_TEMP/developer-id.p12"
           keychain_path="$RUNNER_TEMP/signing.keychain-db"
           notary_archive="$RUNNER_TEMP/codexbar-to-greptimedb-$TARGET.zip"
@@ -91,15 +92,25 @@ jobs:
             exit 1
           fi
 
+          rm -rf "$app"
+          mkdir -p "$app/Contents/MacOS"
+          cp "$binary" "$app/Contents/MacOS/codexbar-to-greptimedb"
+          cp packaging/macos/Info.plist "$app/Contents/Info.plist"
+          version="${GITHUB_REF_NAME#v}"
+          plutil -replace CFBundleShortVersionString -string "$version" \
+            "$app/Contents/Info.plist"
+          plutil -replace CFBundleVersion -string "$GITHUB_RUN_NUMBER" \
+            "$app/Contents/Info.plist"
+
           codesign \
             --force \
             --options runtime \
             --timestamp \
             --sign "$signing_identity" \
-            "$binary"
-          codesign --verify --strict --verbose=2 "$binary"
+            "$app"
+          codesign --verify --deep --strict --verbose=2 "$app"
 
-          ditto -c -k --keepParent "$binary" "$notary_archive"
+          ditto -c -k --keepParent "$app" "$notary_archive"
           notary_result="$(
             xcrun notarytool submit "$notary_archive" \
               --apple-id "$APPLE_ID" \
@@ -114,6 +125,10 @@ jobs:
             printf 'error: notarization status is %s\n' "$notary_status" >&2
             exit 1
           fi
+
+          xcrun stapler staple "$app"
+          xcrun stapler validate "$app"
+          codesign --verify --deep --strict --verbose=2 "$app"
       - name: Package release archive
         env:
           TARGET: ${{ matrix.target }}
@@ -124,8 +139,15 @@ jobs:
           version_without_prefix="${VERSION#v}"
           asset_name="$binary-$version_without_prefix-$TARGET.tar.gz"
           mkdir -p dist/staging
-          cp ".build/release/$binary" "dist/staging/$binary"
-          tar -C dist/staging -czf "dist/$asset_name" "$binary"
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            ditto "$RUNNER_TEMP/CodexBarToGreptimeDB.app" \
+              "dist/staging/CodexBarToGreptimeDB.app"
+            payload="CodexBarToGreptimeDB.app"
+          else
+            cp ".build/release/$binary" "dist/staging/$binary"
+            payload="$binary"
+          fi
+          tar -C dist/staging -czf "dist/$asset_name" "$payload"
           (
             cd dist
             if command -v shasum >/dev/null 2>&1; then
@@ -134,6 +156,16 @@ jobs:
               sha256sum "$asset_name" > "$asset_name.sha256"
             fi
           )
+      - name: Smoke test macOS app bundle
+        if: runner.os == 'macOS'
+        run: |
+          set -eu
+          app="$RUNNER_TEMP/CodexBarToGreptimeDB.app"
+          test -x "$app/Contents/MacOS/codexbar-to-greptimedb"
+          test "$(plutil -extract CFBundleIdentifier raw -o - "$app/Contents/Info.plist")" = \
+            "com.smartcrabai.codexbar-to-greptimedb"
+          "$app/Contents/MacOS/codexbar-to-greptimedb" --help
+
       - name: Smoke test Linux release archive
         if: runner.os == 'Linux'
         env:
