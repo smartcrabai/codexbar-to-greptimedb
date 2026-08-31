@@ -28,7 +28,7 @@ Install the latest release to `$HOME/.local/bin`:
 
 ```sh
 curl --fail --location --silent --show-error \
-  https://raw.githubusercontent.com/takumi3488/codexbar-to-greptimedb/main/install.sh | sh
+  https://raw.githubusercontent.com/smartcrabai/codexbar-to-greptimedb/main/install.sh | sh
 ```
 
 If `$HOME/.local/bin` is not already on your `PATH`, add it in your shell startup file. For the current shell:
@@ -41,7 +41,7 @@ Pin an installation to a version or choose a different destination by downloadin
 
 ```sh
 curl --fail --location --silent --show-error \
-  https://raw.githubusercontent.com/takumi3488/codexbar-to-greptimedb/main/install.sh \
+  https://raw.githubusercontent.com/smartcrabai/codexbar-to-greptimedb/main/install.sh \
   -o install.sh
 
 # Inspect install.sh before running it.

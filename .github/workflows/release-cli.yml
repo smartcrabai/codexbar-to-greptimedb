@@ -46,6 +46,74 @@ jobs:
           else
             swift build --configuration release --product codexbar-to-greptimedb
           fi
+      - name: Sign and notarize macOS binary
+        if: runner.os == 'macOS'
+        env:
+          TARGET: ${{ matrix.target }}
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          binary=".build/release/codexbar-to-greptimedb"
+          certificate_path="$RUNNER_TEMP/developer-id.p12"
+          keychain_path="$RUNNER_TEMP/signing.keychain-db"
+          notary_archive="$RUNNER_TEMP/codexbar-to-greptimedb-$TARGET.zip"
+          keychain_password="$(openssl rand -base64 32)"
+          trap 'security delete-keychain "$keychain_path" >/dev/null 2>&1 || true; rm -f "$certificate_path" "$notary_archive"' EXIT
+
+          printf '%s' "$MACOS_CERTIFICATE_P12_BASE64" | base64 --decode >"$certificate_path"
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security import "$certificate_path" \
+            -P "$MACOS_CERTIFICATE_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$keychain_path"
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain_path"
+          security list-keychains -d user -s "$keychain_path"
+
+          signing_identity="$(
+            security find-identity -v -p codesigning "$keychain_path" |
+              awk '/Developer ID Application/ { print $2; exit }'
+          )"
+          if [ -z "$signing_identity" ]; then
+            printf '%s\n' 'error: Developer ID Application identity not found' >&2
+            exit 1
+          fi
+
+          codesign \
+            --force \
+            --options runtime \
+            --timestamp \
+            --sign "$signing_identity" \
+            "$binary"
+          codesign --verify --strict --verbose=2 "$binary"
+
+          ditto -c -k --keepParent "$binary" "$notary_archive"
+          notary_result="$(
+            xcrun notarytool submit "$notary_archive" \
+              --apple-id "$APPLE_ID" \
+              --team-id "$APPLE_TEAM_ID" \
+              --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+              --wait \
+              --output-format json
+          )"
+          printf '%s\n' "$notary_result"
+          notary_status="$(printf '%s' "$notary_result" | plutil -extract status raw -o - -)"
+          if [ "$notary_status" != 'Accepted' ]; then
+            printf 'error: notarization status is %s\n' "$notary_status" >&2
+            exit 1
+          fi
       - name: Package release archive
         env:
           TARGET: ${{ matrix.target }}

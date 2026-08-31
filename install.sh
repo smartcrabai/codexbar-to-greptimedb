@@ -1,10 +1,10 @@
 #!/bin/sh
 # Install codexbar-to-greptimedb from a GitHub Release.
-# Usage: curl -fsSL https://raw.githubusercontent.com/takumi3488/codexbar-to-greptimedb/main/install.sh | sh
+# Usage: curl -fsSL https://raw.githubusercontent.com/smartcrabai/codexbar-to-greptimedb/main/install.sh | sh
 
 set -eu
 
-REPOSITORY="${CODEXBAR_TO_GREPTIMEDB_REPOSITORY:-takumi3488/codexbar-to-greptimedb}"
+REPOSITORY="${CODEXBAR_TO_GREPTIMEDB_REPOSITORY:-smartcrabai/codexbar-to-greptimedb}"
 BINARY_NAME="codexbar-to-greptimedb"
 INSTALL_DIR="${CODEXBAR_TO_GREPTIMEDB_INSTALL_DIR:-$HOME/.local/bin}"
 VERSION="${CODEXBAR_TO_GREPTIMEDB_VERSION:-latest}"
@@ -16,7 +16,7 @@ Usage: install.sh [--version VERSION] [--install-dir DIRECTORY]
 Environment variables:
   CODEXBAR_TO_GREPTIMEDB_VERSION       Release version, such as 0.1.0 or v0.1.0.
   CODEXBAR_TO_GREPTIMEDB_INSTALL_DIR   Destination directory. Default: $HOME/.local/bin.
-  CODEXBAR_TO_GREPTIMEDB_REPOSITORY    GitHub owner/repository. Default: takumi3488/codexbar-to-greptimedb.
+  CODEXBAR_TO_GREPTIMEDB_REPOSITORY    GitHub owner/repository. Default: smartcrabai/codexbar-to-greptimedb.
 EOF
 }
 

@@ -28,7 +28,7 @@ brew install smartcrabai/tap/codexbar-to-greptimedb
 
 ```sh
 curl --fail --location --silent --show-error \
-  https://raw.githubusercontent.com/takumi3488/codexbar-to-greptimedb/main/install.sh | sh
+  https://raw.githubusercontent.com/smartcrabai/codexbar-to-greptimedb/main/install.sh | sh
 ```
 
 `$HOME/.local/bin` が `PATH` に含まれていない場合は、シェルの起動設定ファイルに追加してください。現在のシェルだけで有効にする場合:
@@ -41,7 +41,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 ```sh
 curl --fail --location --silent --show-error \
-  https://raw.githubusercontent.com/takumi3488/codexbar-to-greptimedb/main/install.sh \
+  https://raw.githubusercontent.com/smartcrabai/codexbar-to-greptimedb/main/install.sh \
   -o install.sh
 
 # 実行前に install.sh の内容を確認してください。
