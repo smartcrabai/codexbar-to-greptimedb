@@ -60,19 +60,31 @@ open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'
 
 Add the app bundle, not the `codexbar-to-greptimedb` wrapper or the binary inside `Contents/MacOS`.
 
-Homebrew path:
+For Homebrew:
 
-```text
-$(brew --prefix codexbar-to-greptimedb)/CodexBarToGreptimeDB.app
+1. Show the app bundle in Finder:
+
+   ```sh
+   open -R "$(brew --prefix codexbar-to-greptimedb)/CodexBarToGreptimeDB.app"
+   ```
+
+2. Open System Settings → Privacy & Security → Full Disk Access.
+3. Unlock the settings if macOS asks for authentication.
+4. Click `+`, press `⌘⇧G`, and enter the app path shown above.
+5. Select `CodexBarToGreptimeDB.app`, then turn its toggle on.
+6. Restart the service:
+
+   ```sh
+   brew services restart smartcrabai/tap/codexbar-to-greptimedb
+   ```
+
+For the release installer, use the same steps with this app path:
+
+```sh
+open -R "$HOME/.local/bin/CodexBarToGreptimeDB.app"
 ```
 
-Release installer path:
-
-```text
-$HOME/.local/bin/CodexBarToGreptimeDB.app
-```
-
-Restart the Homebrew service after granting access. Full Disk Access is mainly needed for Safari cookie/local-storage reads; use `cli`, `oauth`, or `api` sources when the provider supports them to avoid browser storage access.
+Full Disk Access is mainly needed for Safari cookie/local-storage reads; use `cli`, `oauth`, or `api` sources when the provider supports them to avoid browser storage access.
 
 ## Configure CodexBar
 

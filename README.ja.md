@@ -60,19 +60,31 @@ open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'
 
 追加対象は `codexbar-to-greptimedb` のwrapperや `Contents/MacOS` 内のバイナリではなく、`.app` 本体です。
 
-Homebrewのパス:
+Homebrewの場合:
 
-```text
-$(brew --prefix codexbar-to-greptimedb)/CodexBarToGreptimeDB.app
+1. `.app` 本体をFinderで表示します。
+
+   ```sh
+   open -R "$(brew --prefix codexbar-to-greptimedb)/CodexBarToGreptimeDB.app"
+   ```
+
+2. 「システム設定」→「プライバシーとセキュリティ」→「フルディスクアクセス」を開きます。
+3. macOSが求めた場合、設定変更を認証します。
+4. `+` を押し、`⌘⇧G` で上記の`.app`パスへ移動します。
+5. `CodexBarToGreptimeDB.app` を選択し、トグルをONにします。
+6. serviceを再起動します。
+
+   ```sh
+   brew services restart smartcrabai/tap/codexbar-to-greptimedb
+   ```
+
+リリース用インストーラーでは、同じ手順で次の`.app`を追加します。
+
+```sh
+open -R "$HOME/.local/bin/CodexBarToGreptimeDB.app"
 ```
 
-リリース用インストーラーのパス:
-
-```text
-$HOME/.local/bin/CodexBarToGreptimeDB.app
-```
-
-権限付与後、Homebrew serviceを再起動します。フルディスクアクセスは主にSafariのCookie・local storage読み取りで必要です。対応プロバイダーでは `cli`、`oauth`、`api` sourceを使うとブラウザ保存領域へのアクセスを避けられます。
+フルディスクアクセスは主にSafariのCookie・local storage読み取りで必要です。対応プロバイダーでは `cli`、`oauth`、`api` sourceを使うとブラウザ保存領域へのアクセスを避けられます。
 
 ## CodexBar の設定
 
