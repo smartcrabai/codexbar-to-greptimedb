@@ -16,7 +16,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - name: Import Swift signing key
+        run: |
+          gpg --keyserver keyserver.ubuntu.com --recv-keys E813C892820A6FA13755B268F167DF1ACF9CE069
+      - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
           swift-version: "6.2"
       - name: Check formatting
@@ -28,7 +31,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - name: Import Swift signing key
+        run: |
+          gpg --keyserver keyserver.ubuntu.com --recv-keys E813C892820A6FA13755B268F167DF1ACF9CE069
+      - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
           swift-version: "6.2"
       - name: Run SwiftLint
@@ -49,7 +55,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - name: Import Swift signing key
+        run: |
+          gpg --keyserver keyserver.ubuntu.com --recv-keys E813C892820A6FA13755B268F167DF1ACF9CE069
+      - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
           swift-version: "6.2"
       - name: Install SQLite development headers
@@ -68,7 +77,10 @@ jobs:
       RUN_GREPTIMEDB_E2E: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - name: Import Swift signing key
+        run: |
+          gpg --keyserver keyserver.ubuntu.com --recv-keys E813C892820A6FA13755B268F167DF1ACF9CE069
+      - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
           swift-version: "6.2"
       - name: Install SQLite development headers
