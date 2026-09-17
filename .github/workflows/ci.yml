@@ -16,9 +16,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2
         with:
-          swift-version: "6.2"
+          swift-version: "6.3"
       - name: Check formatting
         run: swift format lint --strict --recursive Package.swift Sources Tests
 
@@ -28,9 +28,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2
         with:
-          swift-version: "6.2"
+          swift-version: "6.3"
       - name: Run SwiftLint
         run: |
           docker run --rm \
@@ -49,9 +49,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2
         with:
-          swift-version: "6.2"
+          swift-version: "6.3"
       - name: Install SQLite development headers
         run: sudo apt-get update && sudo apt-get install --yes libsqlite3-dev
       - name: Run unit tests
@@ -68,9 +68,9 @@ jobs:
       RUN_GREPTIMEDB_E2E: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2
         with:
-          swift-version: "6.2"
+          swift-version: "6.3"
       - name: Install SQLite development headers
         run: sudo apt-get update && sudo apt-get install --yes libsqlite3-dev
       - name: Start GreptimeDB
@@ -109,7 +109,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Automerge
-        uses: pascalgn/automerge-action@v0.16.4
+        uses: pascalgn/automerge-action@7961b8b5eec56cc088c140b56d864285eabd3f67 # v0.16.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_LABELS: automerge
