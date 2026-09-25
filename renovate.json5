@@ -44,6 +44,21 @@
       minimumReleaseAge: "7 days"
     },
     {
+      // setup-swift v2 has a hardcoded Swift version allowlist that breaks on
+      // new Swift majors (e.g. "Version 6.4 is not available"). v3 is
+      // Swiftly-based with no allowlist, so allow major updates for it.
+      matchManagers: [
+        "github-actions"
+      ],
+      matchDepNames: [
+        "swift-actions/setup-swift"
+      ],
+      matchUpdateTypes: [
+        "major"
+      ],
+      enabled: true,
+    },
+    {
       // digest/pinDigest updates have no releaseTimestamp, so minimumReleaseAge
       // (with the default minimumReleaseAgeBehaviour "timestamp-required") keeps
       // renovate/stability-days pending forever. Must stay last to override the
