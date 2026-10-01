@@ -3,14 +3,6 @@
     "config:best-practices"
   ],
   dependencyDashboard: false,
-  // Scan the central source file for Renovate only in the terraforms repository
-  // (additive, so the default patterns are still kept; this path does not
-  // exist in the distribution target repositories).
-  "github-actions": {
-    managerFilePatterns: [
-      "/(^|/)environments/shared/cruise/workflow\\.yml$/"
-    ],
-  },
   minimumReleaseAge: "3 days",
   lockFileMaintenance: {
     minimumReleaseAge: null,
@@ -42,21 +34,6 @@
         "github-actions"
       ],
       minimumReleaseAge: "7 days"
-    },
-    {
-      // setup-swift v2 has a hardcoded Swift version allowlist that breaks on
-      // new Swift majors (e.g. "Version 6.4 is not available"). v3 is
-      // Swiftly-based with no allowlist, so allow major updates for it.
-      matchManagers: [
-        "github-actions"
-      ],
-      matchDepNames: [
-        "swift-actions/setup-swift"
-      ],
-      matchUpdateTypes: [
-        "major"
-      ],
-      enabled: true,
     },
     {
       // digest/pinDigest updates have no releaseTimestamp, so minimumReleaseAge
