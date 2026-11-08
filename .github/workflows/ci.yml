@@ -12,25 +12,25 @@ permissions:
 jobs:
   fmt:
     name: Format
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Check formatting
         run: swift format lint --strict --recursive Package.swift Sources Tests
 
   lint:
     name: Lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Run SwiftLint
         run: |
           docker run --rm \
@@ -45,13 +45,13 @@ jobs:
 
   test:
     name: Unit tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Install SQLite development headers
         run: sudo apt-get update && sudo apt-get install --yes libsqlite3-dev
       - name: Run unit tests
@@ -59,7 +59,7 @@ jobs:
 
   e2e:
     name: GreptimeDB E2E
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 25
     env:
       GREPTIMEDB_IMAGE: greptime/greptimedb@sha256:ea8ebd1a3de42ae81389be5b9ed0505bf4e6289708245fab957162a8ea9f9c21
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Install SQLite development headers
         run: sudo apt-get update && sudo apt-get install --yes libsqlite3-dev
       - name: Start GreptimeDB
@@ -101,7 +101,7 @@ jobs:
 
   automerge:
     name: Renovate automerge
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [fmt, lint, test, e2e]
     if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'renovate[bot]'
     permissions:
