@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Check formatting
         run: swift format lint --strict --recursive Package.swift Sources Tests
 
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Run SwiftLint
         run: |
           docker run --rm \
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Install SQLite development headers
         run: sudo apt-get update && sudo apt-get install --yes libsqlite3-dev
       - name: Run unit tests
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3
         with:
-          swift-version: "6.4"
+          swift-version: "6.4.2"
       - name: Install SQLite development headers
         run: sudo apt-get update && sudo apt-get install --yes libsqlite3-dev
       - name: Start GreptimeDB
