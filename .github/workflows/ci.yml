@@ -12,7 +12,7 @@ permissions:
 jobs:
   fmt:
     name: Format
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -24,7 +24,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -45,7 +45,7 @@ jobs:
 
   test:
     name: Unit tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -59,7 +59,7 @@ jobs:
 
   e2e:
     name: GreptimeDB E2E
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 25
     env:
       GREPTIMEDB_IMAGE: greptime/greptimedb@sha256:ea8ebd1a3de42ae81389be5b9ed0505bf4e6289708245fab957162a8ea9f9c21
@@ -101,7 +101,7 @@ jobs:
 
   automerge:
     name: Renovate automerge
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [fmt, lint, test, e2e]
     if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'renovate[bot]'
     permissions:
